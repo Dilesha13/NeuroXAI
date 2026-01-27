@@ -34,12 +34,20 @@ print("Building TEST set...")
 X_test, y_test = build_split_arrays(EDF_DIR, test_files, annotat_new)
 
 # ---- SAVE ----
+print("Saving X_train...")
 np.save(f"{OUT_DIR}/X_train.npy", X_train)
+print("Saving y_train...")
 np.save(f"{OUT_DIR}/y_train.npy", y_train)
-np.save(f"{OUT_DIR}/X_val.npy",   X_val)
-np.save(f"{OUT_DIR}/y_val.npy",   y_val)
-np.save(f"{OUT_DIR}/X_test.npy",  X_test)
-np.save(f"{OUT_DIR}/y_test.npy",  y_test)
+
+print("Saving X_val...")
+np.save(f"{OUT_DIR}/X_val.npy", X_val)
+print("Saving y_val...")
+np.save(f"{OUT_DIR}/y_val.npy", y_val)
+
+print("Saving X_test...")
+np.save(f"{OUT_DIR}/X_test.npy", X_test)
+print("Saving y_test...")
+np.save(f"{OUT_DIR}/y_test.npy", y_test)
 
 print("Saved processed arrays to:", OUT_DIR)
 print("Train seizures:", y_train.sum())
