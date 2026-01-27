@@ -51,3 +51,36 @@ def file_to_baby_id(fname):
     base = os.path.basename(fname)
     num = base.replace("eeg", "").replace(".edf", "")
     return int(num)
+
+
+def build_split_arrays(
+    edf_dir, files, annotat_new,
+    consensus_mode="strict",
+    window_sec=10, step_sec=5,
+    min_seizure_seconds=1
+):
+    """
+    Build X,y arrays for a split (train/val/test) using file list.
+    """
+    X_all, y_all = [], []
+
+    for f in files:
+        edf_path = os.path.join(edf_dir, f)
+        baby_id = file_to_baby_id(f)
+
+        x, sfreq, _ = load_preprocess_edf(edf_path)
+        cons = consensus_seconds(annotat_new, baby_id, mode=consensus_mode)
+
+        X, y = make_windows_and_labels_from_1hz(
+            x, sfreq, cons,
+            window_sec=window_sec,
+            step_sec=step_sec,
+            min_seizure_seconds=min_seizure_seconds
+        )
+
+        X_all.append(X)
+        y_all.append(y)
+
+    X_all = np.concatenate(X_all, axis=0)
+    y_all = np.concatenate(y_all, axis=0)
+    return X_all, y_all
