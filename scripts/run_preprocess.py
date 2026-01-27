@@ -19,3 +19,6 @@ print("Total EDF files:", len(edf_files))
 # ---- SPLIT (70/10/20) ----
 train_files, val_files, test_files = split_files(edf_files, seed=42)
 print("Train:", len(train_files), "Val:", len(val_files), "Test:", len(test_files))
+
+# ---- LOAD ANNOTATIONS ----
+annotat_new = load_annotat_new(ANN_PATH)
