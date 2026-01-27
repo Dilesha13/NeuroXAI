@@ -3,7 +3,7 @@ import numpy as np
 
 from neuroxai.data.splits import split_files
 from neuroxai.data.load_annotations import load_annotat_new
-from neuroxai.data.build_dataset import build_split_arrays
+from neuroxai.data.segment import build_split_arrays
 
 # ---- PATHS ----
 EDF_DIR = "/content/drive/MyDrive/FYP/NeuroXAI/data_raw/eeg"
