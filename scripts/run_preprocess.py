@@ -22,3 +22,13 @@ print("Train:", len(train_files), "Val:", len(val_files), "Test:", len(test_file
 
 # ---- LOAD ANNOTATIONS ----
 annotat_new = load_annotat_new(ANN_PATH)
+
+# ---- BUILD DATA ----
+print("Building TRAIN set...")
+X_train, y_train = build_split_arrays(EDF_DIR, train_files, annotat_new)
+
+print("Building VAL set...")
+X_val, y_val = build_split_arrays(EDF_DIR, val_files, annotat_new)
+
+print("Building TEST set...")
+X_test, y_test = build_split_arrays(EDF_DIR, test_files, annotat_new)
