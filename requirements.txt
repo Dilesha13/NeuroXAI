@@ -9,3 +9,4 @@ mne
 torch
 torchvision
 torchaudio
+streamlit
