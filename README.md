@@ -346,13 +346,13 @@ docs/
 
 ## Evaluation Video
 
-[(NeuroXAI Evaluation vedio)](https://youtu.be/AZNuNvjdJN0)
+[NeuroXAI Evaluation vedio](https://youtu.be/AZNuNvjdJN0)
 
 ---
 
 ## Presentation Video
 
-[(NeuroXAI Presentation vedio)](https://youtu.be/QedwIsAsMQk)
+[NeuroXAI Presentation vedio](https://youtu.be/QedwIsAsMQk)
 
 ---
 
@@ -360,7 +360,7 @@ docs/
 
 The complete dissertation is available here.
 
-[(NeuroXAI Thesis)](https://drive.google.com/file/d/1NESt6WLwQADytsDkKKnhfOUL7Z-ciTx0/view?usp=drive_link)
+[NeuroXAI Thesis](https://drive.google.com/file/d/1NESt6WLwQADytsDkKKnhfOUL7Z-ciTx0/view?usp=drive_link)
 
 ---
 
