@@ -83,8 +83,14 @@ function formatPercent(score: number): string {
 function formatPredictionVariant(
   prediction: string
 ): 'default' | 'secondary' | 'destructive' | 'outline' {
-  return prediction.toLowerCase().includes('seizure') &&
-    prediction.toLowerCase().includes('detected')
+  const predictionLower = prediction.toLowerCase();
+
+  if (predictionLower.includes('review needed')) {
+    return 'outline';
+  }
+
+  return predictionLower.includes('seizure') &&
+    predictionLower.includes('detected')
     ? 'destructive'
     : 'secondary';
 }
@@ -118,7 +124,19 @@ function buildChannelChartData(report: ReportData) {
 
 export default function Reports() {
   const [searchParams] = useSearchParams();
-  const inferenceId = searchParams.get('inference_id');
+
+  const storedInferenceId = (() => {
+    try {
+      const raw = localStorage.getItem('latestInferenceResult');
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed?.inference_id ? String(parsed.inference_id) : null;
+    } catch {
+      return null;
+    }
+  })();
+
+  const inferenceId = searchParams.get('inference_id') ?? storedInferenceId;
 
   const [reportData, setReportData] = useState<ReportData | null>(null);
   const [reportId, setReportId] = useState<number | null>(null);
@@ -167,19 +185,26 @@ export default function Reports() {
     fetchReportPreview();
   }, [inferenceId]);
 
-  const handleExportPdf = async () => {
+  const handleExportReport = async () => {
     if (!inferenceId) return;
 
     try {
       setExporting(true);
       setError(null);
 
+      const token = localStorage.getItem('neuroxai-token');
+
       const response = await fetch(`${API_BASE_URL}/reports/${inferenceId}/generate`, {
         method: 'POST',
+        headers: token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {},
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to generate PDF (${response.status})`);
+        throw new Error(`Failed to generate report (${response.status})`);
       }
 
       const data: GenerateReportResponse = await response.json();
@@ -193,7 +218,7 @@ export default function Reports() {
       window.open(fullDownloadUrl, '_blank');
     } catch (err) {
       console.error(err);
-      setError('Failed to generate PDF report.');
+      setError('Failed to generate report.');
     } finally {
       setExporting(false);
     }
@@ -254,9 +279,18 @@ export default function Reports() {
     );
   }
 
+  const predictionLower = reportData.prediction.toLowerCase();
+
+  const reviewNeeded =
+    predictionLower.includes('review needed') ||
+    predictionLower.includes('possible seizure activity');
+
   const seizureDetected =
-    reportData.prediction.toLowerCase().includes('seizure') &&
-    reportData.prediction.toLowerCase().includes('detected');
+    predictionLower.includes('seizure') &&
+    predictionLower.includes('detected') &&
+    !reviewNeeded;
+
+  const statusTone = reviewNeeded ? 'warning' : seizureDetected ? 'positive' : 'negative';
 
   const highlightedRange =
     reportData.seizure_ranges && reportData.seizure_ranges.length > 0
@@ -286,7 +320,7 @@ export default function Reports() {
 
           <Button
             className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-teal-600 dark:hover:bg-teal-700"
-            onClick={handleExportPdf}
+            onClick={handleExportReport}
             disabled={exporting}
           >
             {exporting ? (
@@ -294,7 +328,7 @@ export default function Reports() {
             ) : (
               <Download className="mr-2 h-4 w-4" />
             )}
-            {exporting ? 'Generating PDF...' : 'Export PDF'}
+            {exporting ? 'Generating Report...' : 'Export Report'}
           </Button>
         </div>
       </div>
@@ -312,7 +346,11 @@ export default function Reports() {
             <div className="text-right">
               <Badge
                 variant={formatPredictionVariant(reportData.prediction)}
-                className="px-4 py-2 text-lg"
+                className={`px-4 py-2 text-lg ${
+                  reviewNeeded
+                    ? 'border-yellow-300 bg-yellow-100 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-200'
+                    : ''
+                }`}
               >
                 {reportData.prediction}
               </Badge>
@@ -367,14 +405,18 @@ export default function Reports() {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <div
               className={`rounded-lg border p-6 ${
-                seizureDetected
+                statusTone === 'warning'
+                  ? 'border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-900/20'
+                  : statusTone === 'positive'
                   ? 'border-red-200 bg-red-50 dark:border-red-800 dark:bg-red-900/20'
                   : 'border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-900/20'
               }`}
             >
               <p
                 className={`mb-1 text-sm ${
-                  seizureDetected
+                  statusTone === 'warning'
+                    ? 'text-yellow-700 dark:text-yellow-300'
+                    : statusTone === 'positive'
                     ? 'text-red-600 dark:text-red-400'
                     : 'text-green-600 dark:text-green-400'
                 }`}
@@ -383,7 +425,9 @@ export default function Reports() {
               </p>
               <p
                 className={`text-2xl font-bold ${
-                  seizureDetected
+                  statusTone === 'warning'
+                    ? 'text-yellow-800 dark:text-yellow-200'
+                    : statusTone === 'positive'
                     ? 'text-red-700 dark:text-red-300'
                     : 'text-green-700 dark:text-green-300'
                 }`}

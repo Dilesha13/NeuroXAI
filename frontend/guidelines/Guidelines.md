@@ -1,61 +1,193 @@
-**Add your own guidelines here**
-<!--
+# NeuroXAI Frontend
 
-System Guidelines
+NeuroXAI Frontend is a React and TypeScript web application for EEG-based neonatal seizure analysis. It provides the user interface for authentication, EEG upload, patient record viewing, AI analysis, explainability, report generation, and account settings.
 
-Use this file to provide the AI with rules and guidelines you want it to follow.
-This template outlines a few examples of things you can add. You can add your own sections and format it to suit your needs
+This project is built with Vite and uses a component-based UI structure for a responsive clinical dashboard experience.
 
-TIP: More context isn't always better. It can confuse the LLM. Try and add the most important rules you need
+## Features
 
-# General guidelines
+- Landing page for product introduction
+- User authentication flow
+  - Sign in
+  - Sign up
+  - Email verification
+- Protected dashboard area
+- EEG upload page with EDF file validation
+- Patient records view
+- AI analysis page for seizure detection results
+- Explainability page for model insights
+- Reports page for generated reports
+- Settings page for profile, preferences, and security options
+- Theme support
 
-Any general rules you want the AI to follow.
-For example:
+## Tech Stack
 
-* Only use absolute positioning when necessary. Opt for responsive and well structured layouts that use flexbox and grid by default
-* Refactor code as you go to keep code clean
-* Keep file sizes small and put helper functions and components in their own files.
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Recharts
+- Radix UI components
+- Lucide React
 
---------------
+## Project Structure
 
-# Design system guidelines
-Rules for how the AI should make generations look like your company's design system
+```text
+frontend/
+├── guidelines/
+│   └── Guidelines.md
+├── public/
+│   └── images/
+├── src/
+│   ├── app/
+│   │   ├── components/
+│   │   │   ├── auth/
+│   │   │   └── ui/
+│   │   ├── context/
+│   │   ├── layouts/
+│   │   ├── lib/
+│   │   ├── pages/
+│   │   ├── App.tsx
+│   │   └── routes.tsx
+│   ├── assets/
+│   ├── styles/
+│   ├── config.ts
+│   └── main.tsx
+├── index.html
+├── package.json
+├── package-lock.json
+├── postcss.config.mjs
+└── vite.config.js
+```
 
-Additionally, if you select a design system to use in the prompt box, you can reference
-your design system's components, tokens, variables and components.
-For example:
+## Main Pages
 
-* Use a base font-size of 14px
-* Date formats should always be in the format “Jun 10”
-* The bottom toolbar should only ever have a maximum of 4 items
-* Never use the floating action button with the bottom toolbar
-* Chips should always come in sets of 3 or more
-* Don't use a dropdown if there are 2 or fewer options
+### Public Pages
 
-You can also create sub sections and add more specific details
-For example:
+- `/` - Landing page
+- `/signin` - Sign in page
+- `/signup` - Sign up page
+- `/verify-email` - Email verification page
 
+### Protected Pages
 
-## Button
-The Button component is a fundamental interactive element in our design system, designed to trigger actions or navigate
-users through the application. It provides visual feedback and clear affordances to enhance user experience.
+- `/app` - Dashboard
+- `/app/upload` - Upload EEG
+- `/app/patients` - Patient records
+- `/app/analysis` - AI analysis
+- `/app/explainability` - Explainability
+- `/app/reports` - Reports
+- `/app/settings` - Settings
 
-### Usage
-Buttons should be used for important actions that users need to take, such as form submissions, confirming choices,
-or initiating processes. They communicate interactivity and should have clear, action-oriented labels.
+## API Configuration
 
-### Variants
-* Primary Button
-  * Purpose : Used for the main action in a section or page
-  * Visual Style : Bold, filled with the primary brand color
-  * Usage : One primary button per section to guide users toward the most important action
-* Secondary Button
-  * Purpose : Used for alternative or supporting actions
-  * Visual Style : Outlined with the primary color, transparent background
-  * Usage : Can appear alongside a primary button for less important actions
-* Tertiary Button
-  * Purpose : Used for the least important actions
-  * Visual Style : Text-only with no border, using primary color
-  * Usage : For actions that should be available but not emphasized
--->
+The frontend currently points to the backend API through `src/config.ts`.
+
+```ts
+export const API_BASE_URL = "http://127.0.0.1:8000/api/v1";
+```
+
+Some pages also contain the same backend URL directly in the source. Before deployment, update these URLs if your backend is hosted elsewhere.
+
+## Prerequisites
+
+Make sure the following are installed:
+
+- Node.js 18 or later
+- npm 9 or later
+
+## Installation
+
+```bash
+npm install
+```
+
+## Running the Project
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+The app will usually be available at:
+
+```text
+http://localhost:5173
+```
+
+## Production Build
+
+Create a production build:
+
+```bash
+npm run build
+```
+
+Preview the production build locally:
+
+```bash
+npm run preview
+```
+
+## Authentication
+
+The application stores authentication data in local storage after login.
+
+Typical keys used:
+
+- `auth_token`
+- `auth_user`
+- `latestInferenceResult`
+- `neuroxai-user`
+
+Protected pages depend on valid backend authentication responses.
+
+## EEG Upload Workflow
+
+The Upload EEG page supports EDF file selection and drag-and-drop upload. The implemented flow includes:
+
+1. Select or drop an EDF file
+2. Enter patient ID and recording date
+3. Create or find the patient record through the backend
+4. Upload the EEG file
+5. Trigger backend inference
+6. Save the returned result in local storage
+7. Navigate to analysis and explainability pages
+
+## Notes for Deployment
+
+Before deployment, review these points:
+
+- Replace hardcoded localhost API URLs with your deployed backend URL
+- Confirm CORS settings on the backend allow your frontend domain
+- Ensure authentication endpoints are reachable
+- Make sure report and profile image URLs also use the correct backend base URL
+
+## Useful Scripts
+
+```bash
+npm run dev
+npm run build
+npm run preview
+```
+
+## Known Considerations
+
+- The project mixes `src/config.ts` and hardcoded backend URLs in some files
+- Backend availability is required for login, settings, upload, analysis, and reports
+- Local storage is used to pass inference results between pages
+
+## Suggested Improvements
+
+- Centralize all API URLs in one config file
+- Add environment variable support
+- Add form validation utilities
+- Add loading and error boundaries
+- Add automated tests
+- Remove unrelated files from the UI component folder
+
+## License
+
+This project is for academic and research purposes unless you define a separate license.
